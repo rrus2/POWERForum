@@ -17,10 +17,12 @@ namespace POWERForum.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        public UsersController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public UsersController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _context = context;
+            _signInManager = signInManager;
         }
         // GET: api/<UsersController>
         [HttpGet]
@@ -41,8 +43,28 @@ namespace POWERForum.Controllers
             return Ok(user);
         }
 
+        [HttpPost("loginuser")]
+        public async Task<ActionResult<ApplicationUser>> LoginUser()
+        {
+            var username = Request.Form["username"][0];
+            var password = Request.Form["password"][1];
+
+            if (username == null || username == string.Empty)
+                return BadRequest();
+            if (password == null || password == string.Empty)
+                return BadRequest();
+
+            var user = await _userManager.FindByNameAsync(username);
+            var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+
+            if (result.Succeeded)
+                return Ok(user);
+            else
+                return NotFound();
+        }
+
         // POST api/<UsersController>
-        [HttpPost]
+        [HttpPost("createuser")]
         public async Task<ActionResult<ApplicationUser>> PostUser()
         {
             var email = Request.Form["email"][0];

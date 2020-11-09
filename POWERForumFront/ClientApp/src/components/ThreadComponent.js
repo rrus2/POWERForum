@@ -8,7 +8,7 @@ export class ThreadComponent extends Component {
 
     render() {
         if (this.props.threads) {
-            for (var i = 0; i < this.props[0].length; i++) {
+            for (var i = 0; i < this.props.threads.length; i++) {
                 return (
                     <h2>{this.props.threads[0].Name}</h2>
                 )

@@ -91,7 +91,7 @@ namespace POWERForum.Controllers
 
             _context.Threads.Add(thread);
             await _context.SaveChangesAsync();
-            return new Thread();
+            return CreatedAtAction("GetThread", new { id = thread.ID }, thread);
         }
 
         // DELETE: api/Threads/5
