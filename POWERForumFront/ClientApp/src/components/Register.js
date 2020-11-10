@@ -52,7 +52,7 @@ export class Register extends Component {
             headers: { 'content-type': 'multipart/form-data' }
         }
 
-        axios.post("https://localhost:44303/api/users", userFD, config);
+        const user = axios.post("https://localhost:44303/api/users", userFD, config);
 
         event.preventDefault();
     }

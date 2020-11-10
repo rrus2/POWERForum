@@ -1,13 +1,14 @@
 ﻿import React, { Component } from 'react';
+import { fetchUser } from '../store/actions';
 
-export default class Login extends Component {
+export class Login extends Component {
     constructor() {
         super()
         this.state = {
             username: "",
-            password = "",
-            usernameerror = "",
-            passworderror = ""
+            password: "",
+            usernameerror: "",
+            passworderror: ""
         }
     }
 
@@ -17,13 +18,13 @@ export default class Login extends Component {
 
         if (username === null || username === "") {
             this.setState({
-                usernameerror = "username can not be null"
+                usernameerror: "username can not be null"
             })
         }
 
         if (password === null || password === "") {
             this.setState({
-                passworderror = "password can not be null"
+                passworderror: "password can not be null"
             })
         }
 
@@ -31,17 +32,13 @@ export default class Login extends Component {
         loginFD.append('username', username);
         loginFD.append('password', password);
 
-        const config = {
-            headers: { 'content-type': 'multipart/form-data' }
-        }
-
-        var user = axios.post("https://localhost:44303/api/users", loginFD, config);
+        const user = fetchUser(loginFD);
 
         if (user !== null) {
 
         }
         else {
-            alert("FAIL");
+            alert("Login FAIL");
         }
 
         e.preventDefault();
