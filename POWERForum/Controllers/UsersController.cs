@@ -47,7 +47,7 @@ namespace POWERForum.Controllers
         public async Task<ActionResult<ApplicationUser>> LoginUser()
         {
             var username = Request.Form["username"][0];
-            var password = Request.Form["password"][1];
+            var password = Request.Form["password"][0];
 
             if (username == null || username == string.Empty)
                 return BadRequest();
@@ -55,7 +55,9 @@ namespace POWERForum.Controllers
                 return BadRequest();
 
             var user = await _userManager.FindByNameAsync(username);
-            var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+            Microsoft.AspNetCore.Identity.SignInResult result = Microsoft.AspNetCore.Identity.SignInResult.Failed;
+            if(user != null)
+                result = await _signInManager.PasswordSignInAsync(user, password, false, false);
 
             if (result.Succeeded)
                 return Ok(user);
