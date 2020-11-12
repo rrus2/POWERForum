@@ -1,83 +1,71 @@
-﻿import React, { Component } from 'react';
-import { fetchUser } from '../store/actions';
+﻿import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { userHasAuthenticated, useAppContext } from '../lib/contextLib';
+import axios from 'axios';
 
-export class Login extends Component {
-    constructor() {
-        super()
-        this.state = {
-            username: "",
-            password: "",
-            usernameerror: "",
-            passworderror: "",
-            loginmessage:""
-        }
-    }
+export default function Login() {
+    const history = useHistory();
+    const { userHasAuthenticated } = useAppContext();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    let passworderror = "";
+    let usernameerror = "";
+    let loginmessage = "";
 
-    handleUsername = (e) => {
-        this.setState({
-            username: e.value
-        })
-    }
-
-    handlePassword = (e) => {
-        this.setState({
-            password: e.value
-        })
-    }
-
-    handleSubmit = (e) => {
+    function handleSubmit(e) {
         const username = e.target[0].value;
         const password = e.target[1].value;
+        console.log(username);
+        console.log(password);
 
         if (username === null || username === "") {
-            this.setState({
-                usernameerror: "username can not be null"
-            })
+            document.getElementById("usernameerror").innerHTML = "Username can not be null";
         }
 
         if (password === null || password === "") {
-            this.setState({
-                passworderror: "password can not be null"
-            })
+            document.getElementById("passworderror").innerHTML = "Password can not be null";
         }
 
         let loginFD = new FormData();
         loginFD.append('username', username);
         loginFD.append('password', password);
 
-        const user = fetchUser(loginFD)();
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        }
+
+        const user = null;
+        axios.post("https://localhost:44303/api/users/loginuser", loginFD, config).then(user => user);
 
         console.log(user);
-        if (user != undefined) {
-
+        if (user) {
+            userHasAuthenticated(true);
+            history.push("/");
         }
         else {
-            this.setState({
-                loginmessage: "Login failed"
-            })
+            loginmessage = "Login failed";
+            document.getElementById("loginmessage").innerHTML = "Login failed";
         }
 
         e.preventDefault();
     }
 
-    render() {
-        return (
-            <form className="text-center" onSubmit={this.handleSubmit.bind(this)}>
-                <div className="form-group">
-                    <p style={{ color: "red" }} value={this.state.loginmessage}></p>
-                </div>
-                <div className="form-group">
-                    <input type="text" className="form-control-sm" name="username" onChange={this.handleUsername.bind(this)} value={this.state.name} placeholder="Username" />
-                    <p style={{ color: "red" }} value={this.state.usernameerror}></p>
-                </div>
-                <div className="form-group">
-                    <input type="password" className="form-control-sm" name="password" onChange={this.handlePassword.bind(this)} value={this.state.password} placeholder="Password" />
-                    <p style={{ color: "red" }} value={this.state.passworderror}></p>
-                </div>
-                <div className="form-group">
-                    <input type="submit" className="btn btn-primary" value="Login" />
-                </div>
-            </form>
-            )
-    }
+    return (
+        <form className="text-center" onSubmit={handleSubmit.bind(this)}>
+            <div className="form-group">
+                <p id="loginmessage" style={{ color: "red" }} value={loginmessage}></p>
+            </div>
+            <div className="form-group">
+                <input type="text" className="form-control-sm" name="username" onChange={e => setUsername(e.target.value)} value={username} placeholder="Username" />
+                <p id="usernameerror" style={{ color: "red" }} value={usernameerror}></p>
+            </div>
+            <div className="form-group">
+                <input type="password" className="form-control-sm" name="password" onChange={e => setPassword(e.target.value)} value={password} placeholder="Password" />
+                <p id="passworderror" style={{ color: "red" }} value={passworderror}></p>
+            </div>
+            <div className="form-group">
+                <input type="submit" className="btn btn-primary" value="Login" />
+            </div>
+        </form>
+    )
 }

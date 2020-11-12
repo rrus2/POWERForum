@@ -50,9 +50,9 @@ namespace POWERForum.Controllers
             var password = Request.Form["password"][0];
 
             if (username == null || username == string.Empty)
-                return BadRequest();
+                return Ok();
             if (password == null || password == string.Empty)
-                return BadRequest();
+                return Ok();
 
             var user = await _userManager.FindByNameAsync(username);
             Microsoft.AspNetCore.Identity.SignInResult result = Microsoft.AspNetCore.Identity.SignInResult.Failed;
@@ -62,7 +62,7 @@ namespace POWERForum.Controllers
             if (result.Succeeded)
                 return Ok(user);
             else
-                return NotFound();
+                return Ok();
         }
 
         // POST api/<UsersController>
