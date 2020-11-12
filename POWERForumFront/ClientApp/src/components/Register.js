@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { userHasAuthenticated, useAppContext } from '../lib/contextLib';
+import { error } from 'jquery';
 
 export default function Register() {
     const history = useHistory();
-    const { userHasAuthenticated } = useAppContext();
+    const {userHasAuthenticated} = useAppContext();
     const [email, setEmail] = useState("");
     const [date, setDate] = useState("");
     const [password, setPassword] = useState("");
@@ -47,14 +48,20 @@ export default function Register() {
         }
 
         const user = null;
-        axios.post("https://localhost:44303/api/users/createuser", userFD, config).then(user => user);
-
+        axios.post("https://localhost:44303/api/users/createuser", userFD, config)
+            .then(user => user)
+            .catch(function (e) {
+                for (var i = 0; i < e.response.data.length; i++) {
+                    document.getElementById("registererror").innerHTML += e.response.data[i].description + "<br />";
+                }
+                console.log(e.response.data);
+        });
         if (user) {
             userHasAuthenticated(true);
             history.push("/");
         }
         else {
-            document.getElementById("registererror").innerHTML = "Registration fail for some reason";
+            document.getElementById("registererror").innerHTML = "Registration failed for some reason <br />";
         }
 
         event.preventDefault();
@@ -66,19 +73,19 @@ export default function Register() {
                 <p style={{ color: "red" }} id="registererror"></p>
             </div>
             <div className="form-group">
-                <input className="form-control-sm" type="email" placeholder="Email" name="email" onChange={e => setEmail(e.target.value)} />
+                <input className="form-control-sm" type="email" placeholder="Email" value={email} name="email" onChange={e => setEmail(e.target.value)} />
                 <p style={{ color: "red" }} id="emailerror"></p>
             </div>
             <div className="form-group">
-                <input type="date" className="form-control-sm" name="birthdate" onChange={e => setDate(e.target.value)} />
+                <input type="date" className="form-control-sm" value={date} name="birthdate" onChange={e => setDate(e.target.value)} />
                 <p style={{ color: "red" }} id="dateerror"></p>
             </div>
             <div className="form-group">
-                <input className="form-control-sm" type="password" placeholder="Password" name="password" onChange={e => setPassword(e.target.value)} />
+                <input className="form-control-sm" type="password" value={password} placeholder="Password" name="password" onChange={e => setPassword(e.target.value)} />
                 <p style={{ color: "red" }} id="passworderror"></p>
             </div>
             <div className="form-group">
-                <input className="form-control-sm" type="password" placeholder="Repeat password" name="repeatpassword" onChange={e => setRepeatpassword(e.target.value)} />
+                <input className="form-control-sm" type="password" value={repeatpassword} placeholder="Repeat password" name="repeatpassword" onChange={e => setRepeatpassword(e.target.value)} />
                 <p style={{ color: "red" }} id="repeatpassworderror"></p>
             </div>
             <div className="form-group">

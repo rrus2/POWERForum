@@ -93,9 +93,6 @@ namespace POWERForum.Controllers
                 UserName = email
             };
 
-            if (user == null)
-                return Ok();
-
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
@@ -106,7 +103,7 @@ namespace POWERForum.Controllers
                 return CreatedAtAction("GetUser", new { id = user.Id }, user);
             }
             else
-                return BadRequest();
+                return BadRequest(result.Errors);
         }
 
         // PUT api/<UsersController>/5
