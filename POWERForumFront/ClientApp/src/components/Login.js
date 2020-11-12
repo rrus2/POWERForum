@@ -15,8 +15,6 @@ export default function Login() {
     function handleSubmit(e) {
         const username = e.target[0].value;
         const password = e.target[1].value;
-        console.log(username);
-        console.log(password);
 
         if (username === null || username === "") {
             document.getElementById("usernameerror").innerHTML = "Username can not be null";

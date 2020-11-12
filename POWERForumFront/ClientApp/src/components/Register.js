@@ -1,45 +1,39 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
+import { userHasAuthenticated, useAppContext } from '../lib/contextLib';
 
-export class Register extends Component {
-    constructor() {
-        super();
-        this.state = {
-            emailerror: "",
-            birthdateerror: "",
-            passworderror: "",
-            repeatpassworderror: ""
-        }
-    }
+export default function Register() {
+    const history = useHistory();
+    const { userHasAuthenticated } = useAppContext();
+    const [email, setEmail] = useState("");
+    const [date, setDate] = useState("");
+    const [password, setPassword] = useState("");
+    const [repeatpassword, setRepeatpassword] = useState("");
 
-    handleSubmit(event) {
-        let email = event.target[0].value;
-        let birthdate = event.target[1].value;
-        let password = event.target[2].value;
-        let repeatpassword = event.target[3].value;
+    function handleSubmit(event) {
+        const email = event.target[0].value;
+        const birthdate = event.target[1].value;
+        const password = event.target[2].value;
+        const repeatpassword = event.target[3].value;
 
         if (birthdate === null) {
-            this.setState({
-                birthdateerror: "You must provide a birthdate"
-            })
+            document.getElementById("dateerror").innerHTML = "Birthdate can not be null";
         }
 
         if (password === "") {
-            this.setState({
-                passworderror: "You must provide a password"
-            });
+            document.getElementById("passworderror").innerHTML = "Password can not be null";
         };
 
+        if (birthdate > Date.now()) {
+            document.getElementById("dateerror").innerHTML = "Birthdate can not be larger than today";
+        }
         if (repeatpassword === "") {
-            this.setState({
-                repeatpassworderror: "You must repeat your password"
-            });
+            document.getElementById("repeatpassworderror").innerHTML = "Repeat password can not be null";
         };
 
         if (password !== repeatpassword) {
-            this.setState({
-                repeatpassworderror: "Passwords do not match"
-            });
+            document.getElementById("repeatpassworderror").innerHTML = "Passwords must match";
         };
 
         let userFD = new FormData();
@@ -52,33 +46,44 @@ export class Register extends Component {
             headers: { 'content-type': 'multipart/form-data' }
         }
 
-        const user = axios.post("https://localhost:44303/api/users/createuser", userFD, config);
+        const user = null;
+        axios.post("https://localhost:44303/api/users/createuser", userFD, config).then(user => user);
+
+        if (user) {
+            userHasAuthenticated(true);
+            history.push("/");
+        }
+        else {
+            document.getElementById("registererror").innerHTML = "Registration fail for some reason";
+        }
 
         event.preventDefault();
     }
 
-    render() {
-        return (
-            <form className="text-center" onSubmit={this.handleSubmit.bind(this)}>
-                <div className="form-group">
-                    <input className="form-control-sm" type="email" placeholder="Email" name="email" value={this.email} />
-                    <p style={{ color: "red" }}>{this.state.emailerror}</p>
-                </div>
-                <div className="form-group">
-                    <input type="date" className="form-control-sm" name="birthdate" value={this.birthdate} />
-                </div>
-                <div className="form-group">
-                    <input className="form-control-sm" type="password" placeholder="Password" name="password" value={this.password} />
-                    <p style={{ color: "red" }}>{this.state.passworderror}</p>
-                </div>
-                <div className="form-group">
-                    <input className="form-control-sm" type="password" placeholder="Repeat password" name="repeatpassword" value={this.repeatpassword} />
-                    <p style={{ color: "red" }}>{this.state.repeatpassworderror}</p>
-                </div>
-                <div className="form-group">
-                    <input className="btn btn-primary" type="submit" value="Register" />
-                </div>
-            </form>
-        )
-    }
+    return (
+        <form className="text-center" onSubmit={handleSubmit.bind(this)}>
+            <div className="form-group">
+                <p style={{ color: "red" }} id="registererror"></p>
+            </div>
+            <div className="form-group">
+                <input className="form-control-sm" type="email" placeholder="Email" name="email" onChange={e => setEmail(e.target.value)} />
+                <p style={{ color: "red" }} id="emailerror"></p>
+            </div>
+            <div className="form-group">
+                <input type="date" className="form-control-sm" name="birthdate" onChange={e => setDate(e.target.value)} />
+                <p style={{ color: "red" }} id="dateerror"></p>
+            </div>
+            <div className="form-group">
+                <input className="form-control-sm" type="password" placeholder="Password" name="password" onChange={e => setPassword(e.target.value)} />
+                <p style={{ color: "red" }} id="passworderror"></p>
+            </div>
+            <div className="form-group">
+                <input className="form-control-sm" type="password" placeholder="Repeat password" name="repeatpassword" onChange={e => setRepeatpassword(e.target.value)} />
+                <p style={{ color: "red" }} id="repeatpassworderror"></p>
+            </div>
+            <div className="form-group">
+                <input className="btn btn-primary" type="submit" value="Register" />
+            </div>
+        </form>
+    )
 }

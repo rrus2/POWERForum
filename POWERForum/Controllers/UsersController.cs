@@ -76,15 +76,15 @@ namespace POWERForum.Controllers
             var repeatpassword = Request.Form["repeatpassword"][0];
 
             if (email == null)
-                return BadRequest();
+                return Ok();
             if (!DateTime.TryParse(birthdateToConvert, out birthdate))
-                return BadRequest();
+                return Ok();
             if (password == null)
-                return BadRequest();
+                return Ok();
             if (repeatpassword == null)
-                return BadRequest();
+                return Ok();
             if (password != repeatpassword)
-                return BadRequest();
+                return Ok();
 
             var user = new ApplicationUser()
             {
@@ -94,7 +94,7 @@ namespace POWERForum.Controllers
             };
 
             if (user == null)
-                return BadRequest();
+                return Ok();
 
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
