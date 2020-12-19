@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { userHasAuthenticated, useAppContext } from '../lib/contextLib';
-import { error } from 'jquery';
 
 export default function Register() {
     const history = useHistory();
@@ -49,13 +48,14 @@ export default function Register() {
 
         const user = null;
         axios.post("https://localhost:44303/api/users/createuser", userFD, config)
-            .then(user => user)
+            .then(x => { user = x.data })
             .catch(function (e) {
                 for (var i = 0; i < e.response.data.length; i++) {
                     document.getElementById("registererror").innerHTML += e.response.data[i].description + "<br />";
                 }
                 console.log(e.response.data);
-        });
+            });
+        console.log(user);
         if (user) {
             userHasAuthenticated(true);
             history.push("/");

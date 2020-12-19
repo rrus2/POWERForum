@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export default function Login() {
     const history = useHistory();
-    const { userHasAuthenticated } = useAppContext();
+    const {userHasAuthenticated} = useAppContext();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -29,9 +29,12 @@ export default function Login() {
             headers: { 'content-type': 'multipart/form-data' }
         }
 
-        let user = null;
-        let errors = null;
-        axios.post("https://localhost:44303/api/users/loginuser", loginFD, config).then(x => { user = x.data }).catch(e => { errors = e });
+        let user = {};
+        axios.post("https://localhost:44303/api/users/loginuser", loginFD, config)
+            .then(x => {
+                user = x.data;
+                console.log(x.data);
+            });
 
         console.log(user);
         if (user) {

@@ -50,6 +50,7 @@ namespace POWERForum
                 options => {
                     options.WithOrigins("*").AllowAnyMethod();
                     options.AllowAnyOrigin();
+                    options.AllowAnyHeader();
                 }
             );
 

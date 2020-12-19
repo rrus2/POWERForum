@@ -82,11 +82,12 @@ namespace POWERForum.Controllers
         {
             var name = Request.Form["name"][0];
             var type = Request.Form["type"][0];
+            var blogs = Request.Form["blogs"][0].Split(",");
 
             var thread = new Thread()
             {
                 Name = name,
-                Type = type,
+                Type = type
             };
 
             _context.Threads.Add(thread);

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using POWERForum.Context;
+using POWERForum.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,41 +34,45 @@ namespace POWERForum.Controllers
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApplicationUser>> GetUser(string id)
+        public async Task<ActionResult<ApplicationUserViewModel>> GetUser(string id)
         {
             if (id == null)
                 return BadRequest();
             var user = await _userManager.FindByIdAsync(id);
+            var roles = await _userManager.GetRolesAsync(user);
+            var userVM = new ApplicationUserViewModel() { ApplicationUser = user, Roles = roles };
             if (user == null)
                 return NotFound();
-            return Ok(user);
+            return Ok(userVM);
         }
 
         [HttpPost("loginuser")]
-        public async Task<ActionResult<ApplicationUser>> LoginUser()
+        public async Task<ActionResult<ApplicationUserViewModel>> LoginUser()
         {
             var username = Request.Form["username"][0];
             var password = Request.Form["password"][0];
 
             if (username == null || username == string.Empty)
-                return Ok();
+                return BadRequest();
             if (password == null || password == string.Empty)
-                return Ok();
+                return BadRequest();
 
             var user = await _userManager.FindByNameAsync(username);
             Microsoft.AspNetCore.Identity.SignInResult result = Microsoft.AspNetCore.Identity.SignInResult.Failed;
             if(user != null)
                 result = await _signInManager.PasswordSignInAsync(user, password, false, false);
 
+            var roles = await _userManager.GetRolesAsync(user);
+            var userVM = new ApplicationUserViewModel() { ApplicationUser = user, Roles = roles };
             if (result.Succeeded)
-                return Ok(user);
+                return Ok(userVM);
             else
-                return Ok();
+                return BadRequest(result);
         }
 
         // POST api/<UsersController>
         [HttpPost("createuser")]
-        public async Task<ActionResult<ApplicationUser>> PostUser()
+        public async Task<ActionResult<ApplicationUserViewModel>> PostUser()
         {
             var email = Request.Form["email"][0];
             var birthdateToConvert = Request.Form["birthdate"][0];
@@ -75,16 +80,16 @@ namespace POWERForum.Controllers
             var password = Request.Form["password"][0];
             var repeatpassword = Request.Form["repeatpassword"][0];
 
-            if (email == null)
-                return Ok();
+            if (email == null || email == string.Empty)
+                return BadRequest("Bad email");
             if (!DateTime.TryParse(birthdateToConvert, out birthdate))
-                return Ok();
-            if (password == null)
-                return Ok();
-            if (repeatpassword == null)
-                return Ok();
+                return BadRequest("Invalid birthdate");
+            if (password == null || password == string.Empty)
+                return BadRequest("Invalid password");
+            if (repeatpassword == null || repeatpassword == string.Empty)
+                return BadRequest("Invalid repeat password");
             if (password != repeatpassword)
-                return Ok();
+                return BadRequest("Password and repeat password do not match");
 
             var user = new ApplicationUser()
             {
@@ -100,7 +105,9 @@ namespace POWERForum.Controllers
                     await _userManager.AddToRoleAsync(user, "Admin");
                 else
                     await _userManager.AddToRoleAsync(user, "User");
-                return CreatedAtAction("GetUser", new { id = user.Id }, user);
+                var roles = await _userManager.GetRolesAsync(user);
+                var userVM = new ApplicationUserViewModel() { ApplicationUser = user, Roles = roles };
+                return CreatedAtAction("GetUser", new { id = userVM.ApplicationUser.Id }, userVM);
             }
             else
                 return BadRequest(result.Errors);

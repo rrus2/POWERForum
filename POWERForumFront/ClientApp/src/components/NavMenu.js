@@ -2,15 +2,15 @@ import React, { Component, useState } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
+import { userHasAuthenticated, useAppContext } from '../lib/contextLib';
 
 
 
 export default function NavMenu() {
-    const displayName = NavMenu.name;
-    const [isAuthenticated, userHasAuthenticated] = useState(false);
-
+    const {userHasAuthenticated} = useAppContext();
+    console.log(userHasAuthenticated);
     function handleLogout() {
-        isAuthenticated(false);
+        userHasAuthenticated(false);
     }
 
     return (
@@ -22,10 +22,11 @@ export default function NavMenu() {
                             <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                             </NavItem>
-                            {isAuthenticated ? (
-                                <NavItem tag={Link} className="text-dark" onClick={handleLogout}>Logout</NavItem>
+                            {userHasAuthenticated ?
+                                (
+                                    <NavItem tag={Link} to="/" className="text-dark" onClick={handleLogout}>Logout</NavItem>
                                 )
-                                :
+                                    :
                                 (
                                     <div>
                                         <NavItem>
