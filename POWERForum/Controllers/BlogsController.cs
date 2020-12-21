@@ -25,14 +25,14 @@ namespace POWERForum.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Blog>>> GetBlogs()
         {
-            return Ok(await _context.Blogs.Include(x => x.ApplicationUser).ToListAsync());
+            return Ok(await _context.Blogs.Include(x => x.Messages).ToListAsync());
         }
 
         // GET: api/Blogs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Blog>> GetBlog(int id)
         {
-            var blog = await _context.Blogs.Include(x => x.ApplicationUser).FirstOrDefaultAsync(x => x.ID == id);
+            var blog = await _context.Blogs.Include(x => x.Messages).FirstOrDefaultAsync(x => x.BlogID == id);
 
             if (blog == null)
             {
@@ -48,7 +48,7 @@ namespace POWERForum.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBlog(int id, Blog blog)
         {
-            if (id != blog.ID)
+            if (id != blog.BlogID)
             {
                 return BadRequest();
             }
@@ -80,10 +80,13 @@ namespace POWERForum.Controllers
         [HttpPost]
         public async Task<ActionResult<Blog>> PostBlog(Blog blog)
         {
+            if (blog == null)
+                return BadRequest();
+
             _context.Blogs.Add(blog);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBlog", new { id = blog.ID }, blog);
+            return CreatedAtAction("GetBlog", new { id = blog.BlogID }, blog);
         }
 
         // DELETE: api/Blogs/5
@@ -104,7 +107,7 @@ namespace POWERForum.Controllers
 
         private bool BlogExists(int id)
         {
-            return _context.Blogs.Any(e => e.ID == id);
+            return _context.Blogs.Any(e => e.BlogID == id);
         }
     }
 }

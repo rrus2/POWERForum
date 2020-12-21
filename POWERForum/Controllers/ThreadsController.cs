@@ -25,14 +25,14 @@ namespace POWERForum.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Thread>>> GetThreads()
         {
-            return Ok(await _context.Threads.Include(x => x.Blog).ToListAsync());
+            return Ok(await _context.Threads.Include(x => x.Blogs).ToListAsync());
         }
 
         // GET: api/Threads/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Thread>> GetThread(int id)
         {
-            var thread = await _context.Threads.Include(x => x.Blog).FirstOrDefaultAsync(x => x.ID == id);
+            var thread = await _context.Threads.Include(x => x.Blogs).FirstOrDefaultAsync(x => x.ThreadID == id);
 
             if (thread == null)
             {
@@ -48,7 +48,7 @@ namespace POWERForum.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutThread(int id, Thread thread)
         {
-            if (id != thread.ID)
+            if (id != thread.ThreadID)
             {
                 return BadRequest();
             }
@@ -92,7 +92,7 @@ namespace POWERForum.Controllers
 
             _context.Threads.Add(thread);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetThread", new { id = thread.ID }, thread);
+            return CreatedAtAction("GetThread", new { id = thread.ThreadID }, thread);
         }
 
         // DELETE: api/Threads/5
@@ -113,7 +113,7 @@ namespace POWERForum.Controllers
 
         private bool ThreadExists(int id)
         {
-            return _context.Threads.Any(e => e.ID == id);
+            return _context.Threads.Any(e => e.ThreadID == id);
         }
     }
 }

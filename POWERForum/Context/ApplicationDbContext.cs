@@ -20,6 +20,7 @@ namespace POWERForum.Context
         }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Thread> Threads { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

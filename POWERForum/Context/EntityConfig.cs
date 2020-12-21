@@ -13,21 +13,26 @@ namespace POWERForum.Context
         public EntityConfig(ModelBuilder builder)
         {
             //thread config
-            builder.Entity<Thread>().HasKey(x => x.ID);
+            builder.Entity<Thread>().HasKey(x => x.ThreadID);
             builder.Entity<Thread>().Property(x => x.Name).IsRequired();
             builder.Entity<Thread>().Property(x => x.Type).IsRequired();
-            builder.Entity<Thread>().HasMany(x => x.Blog).WithOne().OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Thread>().HasMany(x => x.Blogs).WithOne().HasForeignKey(x => x.BlogID);
 
             //blog config
-            builder.Entity<Blog>().HasKey(x => x.ID);
-            builder.Entity<Blog>().Property(x => x.Message).IsRequired();
+            builder.Entity<Blog>().HasKey(x => x.BlogID);
             builder.Entity<Blog>().Property(x => x.Title).IsRequired();
-            builder.Entity<Blog>().HasOne(x => x.ApplicationUser);
+            builder.Entity<Blog>().HasMany(x => x.Messages).WithOne().HasForeignKey(x => x.MessageID);
 
             //user config
             builder.Entity<ApplicationUser>().HasKey(x => x.Id);
-            builder.Entity<ApplicationUser>().HasMany(x => x.Blogs).WithOne();
-            builder.Entity<ApplicationUser>().Property(x => x.Birthdate).IsRequired();
+            builder.Entity<ApplicationUser>().HasMany(x => x.Messages).WithOne(x => x.ApplicationUser);
+            builder.Entity<ApplicationUser>().Property(x => x.Birthdate);
+
+            //mesasge config
+            builder.Entity<Message>().HasKey(x => x.MessageID);
+            builder.Entity<Message>().Property(x => x.MessageText).IsRequired();
+            builder.Entity<Message>().Property(x => x.DateTime).IsRequired();
+            builder.Entity<Message>().HasOne(x => x.ApplicationUser);
         }
     }
 }
