@@ -11,6 +11,6 @@ namespace POWERForum.Models
         public int MessageID { get; set; }
         public string MessageText { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime DateTime { get; set; } = DateTime.Now;
     }
 }

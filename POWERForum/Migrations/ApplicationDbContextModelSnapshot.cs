@@ -223,6 +223,10 @@ namespace POWERForum.Migrations
                     b.Property<int>("BlogID")
                         .HasColumnType("int");
 
+                    b.Property<string>("BlogCreator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -262,6 +266,10 @@ namespace POWERForum.Migrations
                         .UseIdentityColumn();
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThreadCreator")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

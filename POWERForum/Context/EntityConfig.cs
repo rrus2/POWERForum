@@ -14,12 +14,14 @@ namespace POWERForum.Context
         {
             //thread config
             builder.Entity<Thread>().HasKey(x => x.ThreadID);
+            builder.Entity<Thread>().Property(x => x.ThreadCreator).IsRequired();
             builder.Entity<Thread>().Property(x => x.Name).IsRequired();
             builder.Entity<Thread>().Property(x => x.Type).IsRequired();
             builder.Entity<Thread>().HasMany(x => x.Blogs).WithOne().HasForeignKey(x => x.BlogID);
 
             //blog config
             builder.Entity<Blog>().HasKey(x => x.BlogID);
+            builder.Entity<Blog>().Property(x => x.BlogCreator).IsRequired();
             builder.Entity<Blog>().Property(x => x.Title).IsRequired();
             builder.Entity<Blog>().HasMany(x => x.Messages).WithOne().HasForeignKey(x => x.MessageID);
 

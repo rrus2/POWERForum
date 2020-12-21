@@ -105,9 +105,20 @@ namespace POWERForum.Controllers
                     await _userManager.AddToRoleAsync(user, "Admin");
                 else
                     await _userManager.AddToRoleAsync(user, "User");
+
                 var roles = await _userManager.GetRolesAsync(user);
-                var userVM = new ApplicationUserViewModel() { ApplicationUser = user, Roles = roles };
-                return CreatedAtAction("GetUser", new { id = userVM.ApplicationUser.Id }, userVM);
+                var blogs = _context.Blogs.Where(x => x.BlogCreator == user.Email).Select(x => x.BlogID);
+                var threads = _context.Threads.Where(x => x.ThreadCreator == user.Email).Select(x => x.ThreadID);
+
+                var userVM = new UserToReturn() 
+                { 
+                    Email = user.Email, 
+                    Roles = roles, 
+                    CreatedBlogs = blogs, 
+                    CreatedThreads = threads 
+                };
+
+                return Ok(userVM);
             }
             else
                 return BadRequest(result.Errors);

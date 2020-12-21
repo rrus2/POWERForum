@@ -10,7 +10,7 @@ using POWERForum.Context;
 namespace POWERForum.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201221074830_InitialModel")]
+    [Migration("20201221120528_InitialModel")]
     partial class InitialModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -225,6 +225,10 @@ namespace POWERForum.Migrations
                     b.Property<int>("BlogID")
                         .HasColumnType("int");
 
+                    b.Property<string>("BlogCreator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -264,6 +268,10 @@ namespace POWERForum.Migrations
                         .UseIdentityColumn();
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThreadCreator")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
